@@ -304,7 +304,7 @@ fun SleepTrackingScreen(navController: NavHostController) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         TopBar (
-            title = "Sleep Tracking",
+            title = "Sleep tracking",
             navController = navController
         )
         Column (
@@ -380,7 +380,7 @@ fun SleepTrackingScreen(navController: NavHostController) {
             Button (
                 onClick = { navController.navigate("sleepAnalysis") },
                 modifier = Modifier
-                    .size(300.dp, 50.dp),
+                    .size(330.dp, 40.dp),
                 shape = RoundedCornerShape(100.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF65558F))
             ) {
@@ -540,7 +540,7 @@ fun ScheduleSettingsScreen(navController: NavHostController) {
             modifier = Modifier
                 .background(Color(0xFF907ACA))
                 .fillMaxSize()
-                .padding(start = 50.dp, top = 120.dp, bottom = 40.dp, end = 50.dp),
+                .padding(start = 40.dp, top = 120.dp, bottom = 40.dp, end = 40.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(15.dp)
         ) {
@@ -854,15 +854,5 @@ fun SoundSettingsScreen(navController: NavHostController) {
                 )
             }
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun LoginScreenPreview() {
-    val navController = rememberNavController()
-
-    SleepTrackerTheme {
-        SoundSettingsScreen(navController)
     }
 }
