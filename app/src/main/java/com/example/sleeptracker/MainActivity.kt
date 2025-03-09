@@ -20,10 +20,15 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -91,6 +96,7 @@ fun TopBar(title: String, navController: NavHostController) {
             fontSize = 24.sp,
             color = Color(0xFFEACBFF),
             modifier = Modifier.weight(1f),
+            fontWeight = FontWeight.Bold,
             textAlign = androidx.compose.ui.text.style.TextAlign.Center)
         Spacer(modifier = Modifier.width(24.dp))
     }
@@ -239,7 +245,7 @@ fun LoginScreen(navController: NavHostController) {
             Button(
                 onClick = {},
                 modifier = Modifier.size(300.dp, 50.dp),
-                shape = RoundedCornerShape(10.dp),
+                shape = RoundedCornerShape(100.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF65558F))
             ) {
                 Text(
@@ -261,7 +267,7 @@ fun LoginScreen(navController: NavHostController) {
             Button(
                 onClick = {},
                 modifier = Modifier.size(300.dp, 50.dp),
-                shape = RoundedCornerShape(10.dp),
+                shape = RoundedCornerShape(100.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF65558F))
             ) {
                 Text(
@@ -279,23 +285,101 @@ fun LoginScreen(navController: NavHostController) {
 @Composable
 fun SleepTrackingScreen(navController: NavHostController) {
     Column(
-        modifier = Modifier.fillMaxSize().background(Color(0xFF907ACA)),
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFF907ACA)),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         TopBar (
             title = "Sleep Tracking",
             navController = navController
         )
-        Box (
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
+        Column (
+            modifier = Modifier
+            .background(Color(0xFF907ACA))
+            .fillMaxSize()
+            .padding(top = 120.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text ("Sleep Tracking Screen",
+            Text(
+                text = "Good Night",
                 style = TextStyle(
-                    fontSize = 24.sp,
-                    color = Color(0xFFEACBFF)
-                )
+                    fontSize = 32.sp,
+                    color = Color(0xFFEADBFF)
+                ),
+                fontWeight = FontWeight.Bold
             )
+            Spacer(modifier = Modifier.height(120.dp))
+            Card (
+                modifier = Modifier
+                    .size(
+                        width = 180.dp,
+                        height = 80.dp
+                    ),
+                colors = CardDefaults.cardColors(
+                    containerColor = Color(0xFFEACBFF)
+                ),
+                shape = RoundedCornerShape(28.dp)
+            ) {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    Text(
+                        text = "22:48",
+                        color = Color(0xFF65558F),
+                        fontSize = 57.sp
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.height(100.dp))
+            Text(
+                text = "Sleep duration",
+                color = Color(0xFFEACBFF),
+                fontSize = 28.sp,
+            )
+            Card(
+                modifier = Modifier
+                    .size(
+                        width = 135.dp,
+                        height = 50.dp
+                    )
+                    .padding(top = 5.dp, start = 0.dp,  end = 0.dp, bottom = 0.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = Color(0xFFEACBFF)
+                ),
+                shape = RoundedCornerShape(28.dp)
+            ) {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    Text(
+                        text = "00:00",
+                        color = Color(0xFF65558F),
+                        fontSize = 32.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.weight(1f))
+
+            Button (
+                onClick = { navController.navigate("sleepAnalysis") },
+                modifier = Modifier
+                    .size(300.dp, 50.dp),
+                shape = RoundedCornerShape(100.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF65558F))
+            ) {
+                Text(
+                    text = "Start tracking",
+                    style = TextStyle(
+                        fontSize = 22.sp,
+                        color = Color(0xFFEACBFF)
+                    )
+                )
+            }
+            Spacer(modifier = Modifier.height(24.dp))
         }
     }
 }
@@ -303,23 +387,121 @@ fun SleepTrackingScreen(navController: NavHostController) {
 @Composable
 fun SleepAnalysisScreen(navController: NavHostController) {
     Column(
-        modifier = Modifier.fillMaxSize().background(Color(0xFF907ACA)),
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFF907ACA)),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         TopBar (
             title = "Sleep analysis",
             navController = navController
         )
-        Box (
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
+        Column (
+            modifier = Modifier
+                .background(Color(0xFF907ACA))
+                .fillMaxSize()
+                .padding(top = 40.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text ("Sleep Analysis Screen",
-                style = TextStyle(
-                    fontSize = 24.sp,
+            Card(
+                modifier = Modifier.size(220.dp, 140.dp),
+                shape = RoundedCornerShape(28.dp),
+                colors = CardDefaults.cardColors(containerColor = Color(0xFFEACBFF))
+            ) {
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(text = "Tuesday",
+                        fontSize = 24.sp,
+                        color = Color(0xFF65558F)
+                    )
+                    Spacer(modifier = Modifier.height(30.dp))
+
+                    Button(
+                        onClick = { navController.navigate("sleepTracking") },
+                        modifier = Modifier.height(40.dp).width(180.dp),
+                        shape = RoundedCornerShape(100.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF65558F))
+                    ) {
+                        Text(
+                            text = "Start tracking",
+                            fontSize = 20.sp,
+                            color = Color(0xFFEACBFF))
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(80.dp))
+
+            Column(
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 40.dp)
+            ) {
+                Text(
+                    text = "Statistics",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
                     color = Color(0xFFEACBFF)
                 )
-            )
+                HorizontalDivider(
+                    modifier = Modifier.padding(vertical = 4.dp),
+                    thickness = 1.dp,
+                    color = Color(0xFFEACBFF)
+                )
+            }
+            Spacer(modifier = Modifier.height(10.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                Card(
+                    modifier = Modifier.size(130.dp, 130.dp),
+                    shape = RoundedCornerShape(24.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFFEACBFF))
+                ) {
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = "Quality",
+                            fontSize = 22.sp,
+                            color = Color(0xFF65558F)
+                        )
+                        Spacer(modifier = Modifier.height(28.dp))
+                        Text(
+                            text = "82 %",
+                            fontSize = 30.sp,
+                            color = Color(0xFF65558F))
+                    }
+                }
+                Card(
+                    modifier = Modifier.size(130.dp, 130.dp),
+                    shape = RoundedCornerShape(24.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFFEACBFF))
+                ) {
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = "Duration",
+                            fontSize = 22.sp,
+                            color = Color(0xFF65558F)
+                        )
+                        Spacer(modifier = Modifier.height(28.dp))
+                        Text(
+                            text = "7h 35m",
+                            fontSize = 28.sp,
+                            color = Color(0xFF65558F)
+                        )
+                    }
+                }
+            }
         }
     }
 }
@@ -334,16 +516,14 @@ fun ScheduleSettingsScreen(navController: NavHostController) {
             title = "Schedule settings",
             navController = navController
         )
-        Box (
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
+        Column (
+            modifier = Modifier
+                .background(Color(0xFF907ACA))
+                .fillMaxSize()
+                .padding(top = 120.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text ("Schedule Settings Screen",
-                style = TextStyle(
-                    fontSize = 24.sp,
-                    color = Color(0xFFEACBFF)
-                )
-            )
+
         }
     }
 }
@@ -358,16 +538,14 @@ fun NotificationSettingsScreen(navController: NavHostController) {
             title = "Notification settings",
             navController = navController
         )
-        Box (
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
+        Column (
+            modifier = Modifier
+                .background(Color(0xFF907ACA))
+                .fillMaxSize()
+                .padding(top = 120.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text ("Notification Settings Screen",
-                style = TextStyle(
-                    fontSize = 24.sp,
-                    color = Color(0xFFEACBFF)
-                )
-            )
+
         }
     }
 }
@@ -382,16 +560,14 @@ fun SoundSettingsScreen(navController: NavHostController) {
             title = "Sound settings",
             navController = navController
         )
-        Box (
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
+        Column (
+            modifier = Modifier
+                .background(Color(0xFF907ACA))
+                .fillMaxSize()
+                .padding(top = 120.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text ("Sound Settings Screen",
-                style = TextStyle(
-                    fontSize = 24.sp,
-                    color = Color(0xFFEACBFF)
-                )
-            )
+
         }
     }
 }
@@ -402,6 +578,6 @@ fun LoginScreenPreview() {
     val navController = rememberNavController()
 
     SleepTrackerTheme {
-        SleepTrackingScreen(navController)
+        SleepAnalysisScreen(navController)
     }
 }
