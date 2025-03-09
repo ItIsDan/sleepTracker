@@ -1,13 +1,12 @@
 package com.example.sleeptracker
 
 import android.os.Bundle
-import android.widget.Space
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.hoverable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,10 +21,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
-import androidx.compose.material3.Divider
+import androidx.compose.material3.Slider
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -42,11 +42,14 @@ import androidx.compose.material3.TimePickerState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.text.TextStyle
@@ -241,7 +244,7 @@ fun LoginScreen(navController: NavHostController) {
             Button(
                 onClick = { navController.navigate("sleepTracking") },
                 modifier = Modifier.size(300.dp, 50.dp),
-                shape = RoundedCornerShape(10.dp),
+                shape = RoundedCornerShape(100.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF65558F))
             ) {
                 Text(
@@ -438,7 +441,8 @@ fun SleepAnalysisScreen(navController: NavHostController) {
                         Text(
                             text = "Start tracking",
                             fontSize = 20.sp,
-                            color = Color(0xFFEACBFF))
+                            color = Color(0xFFEACBFF)
+                        )
                     }
                 }
             }
@@ -446,7 +450,9 @@ fun SleepAnalysisScreen(navController: NavHostController) {
             Spacer(modifier = Modifier.height(80.dp))
 
             Column(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 40.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 40.dp)
             ) {
                 Text(
                     text = "Statistics",
@@ -602,7 +608,11 @@ fun ScheduleSettingsScreen(navController: NavHostController) {
                 shape = RoundedCornerShape(100.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF65558F))
             ) {
-                Text(text = "Confirm", fontSize = 18.sp, color = Color(0xFFEACBFF))
+                Text(
+                    text = "Confirm",
+                    fontSize = 18.sp,
+                    color = Color(0xFFEACBFF)
+                )
             }
         }
     }
@@ -613,7 +623,6 @@ fun ScheduleSettingsScreen(navController: NavHostController) {
 fun NotificationSettingsScreen(navController: NavHostController) {
     var enableNotifications by remember { mutableStateOf(true) }
     var warnIfIgnored by remember { mutableStateOf(false) }
-    var time by remember { mutableStateOf("") }
     val timePickerState = rememberTimePickerState(initialHour = 1, initialMinute = 0, true)
 
     Column(
@@ -710,14 +719,23 @@ fun NotificationSettingsScreen(navController: NavHostController) {
                 shape = RoundedCornerShape(100.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF65558F))
             ) {
-                Text(text = "Confirm", fontSize = 18.sp, color = Color(0xFFEACBFF))
+                Text(
+                    text = "Confirm",
+                    fontSize = 18.sp,
+                    color = Color(0xFFEACBFF)
+                )
             }
         }
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SoundSettingsScreen(navController: NavHostController) {
+    val timePickerState = rememberTimePickerState(initialHour = 1, initialMinute = 0, true)
+    var sliderPosition by remember { mutableFloatStateOf(0f) }
+    val sounds = listOf("Sound 1", "Sound 2", "Sound 3", "Sound 4", "Sound 5", "Sound 6")
+
     Column(
         modifier = Modifier.fillMaxSize().background(Color(0xFF907ACA)),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -730,9 +748,111 @@ fun SoundSettingsScreen(navController: NavHostController) {
             modifier = Modifier
                 .background(Color(0xFF907ACA))
                 .fillMaxSize()
-                .padding(top = 120.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .padding(start = 40.dp, top = 60.dp, bottom = 40.dp, end = 40.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
+            Text (
+                text = "Sound choice",
+                fontSize = 22.sp,
+                color = Color(0xFFEACBFF)
+            )
+            Box(
+                modifier = Modifier
+                    .height(200.dp)
+                    .fillMaxWidth()
+                    .border(1.dp, Color.Transparent, RoundedCornerShape(8.dp))
+                    .clip(RoundedCornerShape(8.dp))
+            ) {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    items(sounds) { sound ->
+                        Card(
+                            colors = CardDefaults.cardColors(
+                                containerColor = Color(0xFFEACBFF)
+                            ),
+                            shape = RoundedCornerShape(0.dp),
+                            modifier = Modifier.size(
+                                width = 360.dp,
+                                height = 50.dp
+                            )
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .clickable { println("Clicked on: $sound") },
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = sound,
+                                    fontSize = 18.sp,
+                                    color = Color(0xFF65558F)
+                                )
+                            }
+                        }
+                    }
+
+                }
+            }
+            Text (
+                text = "Sound volume",
+                fontSize = 22.sp,
+                color = Color(0xFFEACBFF)
+            )
+            Slider (
+                value = sliderPosition,
+                onValueChange = { sliderPosition = it }
+            )
+            Card(
+                shape = RoundedCornerShape(24.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = Color(0xFF65558F)
+                ),
+                modifier = Modifier.size(
+                    width = 280.dp,
+                    height = 160.dp
+                )
+            ) {
+                Column (
+                    modifier = Modifier
+                        .padding(vertical = 10.dp)
+                        .fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = "Shutdown timer",
+                        color = Color(0xFFEACBFF),
+                        fontSize = 12.sp,
+                    )
+                    TimeInput(
+                        state = timePickerState,
+                        colors = TimePickerDefaults.colors(
+                            timeSelectorSelectedContainerColor = Color(0xFF554778),
+                            timeSelectorSelectedContentColor = Color(0xFFEACBFF),
+                            timeSelectorUnselectedContainerColor = Color(0xFF554778),
+                            timeSelectorUnselectedContentColor = Color(0xFFEACBFF),
+                            periodSelectorUnselectedContentColor = Color(0xFFEACBFF)
+                        )
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.weight(1f))
+
+            Button(
+                onClick = {},
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(40.dp),
+                shape = RoundedCornerShape(100.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF65558F))
+            ) {
+                Text(
+                    text = "Confirm",
+                    fontSize = 18.sp,
+                    color = Color(0xFFEACBFF)
+                )
+            }
         }
     }
 }
