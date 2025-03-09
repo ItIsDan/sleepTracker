@@ -1,6 +1,7 @@
 package com.example.sleeptracker
 
 import android.os.Bundle
+import android.widget.Space
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -28,10 +29,17 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TimeInput
+import androidx.compose.material3.TimePickerDefaults
+import androidx.compose.material3.TimePickerState
+import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -40,6 +48,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -49,6 +58,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.sleeptracker.ui.theme.SleepTrackerTheme
+import java.time.LocalTime
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -506,8 +516,12 @@ fun SleepAnalysisScreen(navController: NavHostController) {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ScheduleSettingsScreen(navController: NavHostController) {
+    val startTimePickerState = rememberTimePickerState(initialHour = 1, initialMinute = 0, true)
+    val endTimePickerState = rememberTimePickerState(initialHour = 1, initialMinute = 0, true)
+
     Column(
         modifier = Modifier.fillMaxSize().background(Color(0xFF907ACA)),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -520,16 +534,88 @@ fun ScheduleSettingsScreen(navController: NavHostController) {
             modifier = Modifier
                 .background(Color(0xFF907ACA))
                 .fillMaxSize()
-                .padding(top = 120.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .padding(start = 50.dp, top = 120.dp, bottom = 40.dp, end = 50.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(15.dp)
         ) {
+            Text(
+                text = "Choose your sleep schedule",
+                        fontSize = 22.sp,
+                color = Color(0xFFEACBFF)
+            )
+            Card(
+                shape = RoundedCornerShape(24.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = Color(0xFF65558F)
+                ),
+                modifier = Modifier.size(
+                    width = 280.dp,
+                    height = 300.dp
+                )
+            ) {
+                Column (
+                    modifier = Modifier
+                        .padding(vertical = 10.dp)
+                        .fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = "Enter start time",
+                        color = Color(0xFFEACBFF),
+                        fontSize = 12.sp
+                    )
+                    TimeInput(
+                        state = endTimePickerState,
+                        colors = TimePickerDefaults.colors(
+                            timeSelectorSelectedContainerColor = Color(0xFF554778),
+                            timeSelectorSelectedContentColor = Color(0xFFEACBFF),
+                            timeSelectorUnselectedContainerColor = Color(0xFF554778),
+                            timeSelectorUnselectedContentColor = Color(0xFFEACBFF),
+                            periodSelectorUnselectedContentColor = Color(0xFFEACBFF)
+                        )
+                    )
+                    Spacer(modifier = Modifier.weight(1f))
+                    Text(
+                        text = "Enter wake up time",
+                        color = Color(0xFFEACBFF),
+                        fontSize = 12.sp,
+                    )
+                    TimeInput(
+                        state = startTimePickerState,
+                        colors = TimePickerDefaults.colors(
+                            timeSelectorSelectedContainerColor = Color(0xFF554778),
+                            timeSelectorSelectedContentColor = Color(0xFFEACBFF),
+                            timeSelectorUnselectedContainerColor = Color(0xFF554778),
+                            timeSelectorUnselectedContentColor = Color(0xFFEACBFF),
+                            periodSelectorUnselectedContentColor = Color(0xFFEACBFF)
+                        )
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.weight(1f))
 
+            Button(
+                onClick = {},
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(40.dp),
+                shape = RoundedCornerShape(100.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF65558F))
+            ) {
+                Text(text = "Confirm", fontSize = 18.sp, color = Color(0xFFEACBFF))
+            }
         }
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NotificationSettingsScreen(navController: NavHostController) {
+    var enableNotifications by remember { mutableStateOf(true) }
+    var warnIfIgnored by remember { mutableStateOf(false) }
+    var time by remember { mutableStateOf("") }
+    val timePickerState = rememberTimePickerState(initialHour = 1, initialMinute = 0, true)
+
     Column(
         modifier = Modifier.fillMaxSize().background(Color(0xFF907ACA)),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -542,10 +628,90 @@ fun NotificationSettingsScreen(navController: NavHostController) {
             modifier = Modifier
                 .background(Color(0xFF907ACA))
                 .fillMaxSize()
-                .padding(top = 120.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .padding(start = 40.dp, top = 120.dp, bottom = 40.dp, end = 40.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                Switch(
+                    checked = enableNotifications,
+                    onCheckedChange = { enableNotifications = it },
+                    colors = SwitchDefaults.colors(checkedThumbColor = Color(0xFFEACBFF))
+                )
+                Text(
+                    text = "Enable notifications",
+                    fontSize = 22.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFFEACBFF)
+                )
+            }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                Switch(
+                    checked = warnIfIgnored,
+                    onCheckedChange = { warnIfIgnored = it },
+                    colors = SwitchDefaults.colors(checkedThumbColor = Color(0xFFEACBFF))
+                )
+                Text(
+                    text = "Warn if schedule was ignored",
+                    fontSize = 22.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFFEACBFF)
+                )
+            }
+            Spacer(modifier = Modifier.height(40.dp))
+            Card(
+                shape = RoundedCornerShape(24.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = Color(0xFF65558F)
+                ),
+                modifier = Modifier.size(
+                    width = 280.dp,
+                    height = 160.dp
+                )
+            ) {
+                Column (
+                    modifier = Modifier
+                        .padding(vertical = 10.dp)
+                        .fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = "Warn in advance before sleep schedule",
+                        color = Color(0xFFEACBFF),
+                        fontSize = 12.sp,
+                    )
+                    TimeInput(
+                        state = timePickerState,
+                        colors = TimePickerDefaults.colors(
+                            timeSelectorSelectedContainerColor = Color(0xFF554778),
+                            timeSelectorSelectedContentColor = Color(0xFFEACBFF),
+                            timeSelectorUnselectedContainerColor = Color(0xFF554778),
+                            timeSelectorUnselectedContentColor = Color(0xFFEACBFF),
+                            periodSelectorUnselectedContentColor = Color(0xFFEACBFF)
+                        )
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.weight(1f))
 
+            Button(
+                onClick = {},
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(40.dp),
+                shape = RoundedCornerShape(100.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF65558F))
+            ) {
+                Text(text = "Confirm", fontSize = 18.sp, color = Color(0xFFEACBFF))
+            }
         }
     }
 }
@@ -567,7 +733,6 @@ fun SoundSettingsScreen(navController: NavHostController) {
                 .padding(top = 120.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-
         }
     }
 }
@@ -578,6 +743,6 @@ fun LoginScreenPreview() {
     val navController = rememberNavController()
 
     SleepTrackerTheme {
-        SleepAnalysisScreen(navController)
+        SoundSettingsScreen(navController)
     }
 }
