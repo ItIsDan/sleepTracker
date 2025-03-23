@@ -41,9 +41,11 @@ import androidx.compose.material3.TimePickerDefaults
 import androidx.compose.material3.TimePickerState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -56,12 +58,62 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.sleeptracker.ui.theme.SleepTrackerTheme
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import java.time.LocalTime
+
+interface SoundRepository {
+    fun getSounds(): List<String>
+}
+
+class FakeSoundRepository : SoundRepository {
+    override fun getSounds(): List<String> {
+        return listOf("Sound 1", "Sound 2", "Sound 3", "Sound 4", "Sound 5", "Sound 6")
+    }
+}
+
+class SleepTrackingViewModel : ViewModel() {
+    private val repository: SoundRepository = FakeSoundRepository()
+
+    val sounds = repository.getSounds()
+
+    private val _selectedSound = MutableStateFlow(sounds[0])
+    val selectedSound: StateFlow<String> = _selectedSound.asStateFlow()
+
+    private val _volume = MutableStateFlow(0f)
+    val volume: StateFlow<Float> = _volume.asStateFlow()
+
+    private val _shutdownTimer = MutableStateFlow(Pair(1, 0))
+    val shutdownTimer: StateFlow<Pair<Int, Int>> = _shutdownTimer.asStateFlow()
+
+    fun selectSound(sound: String) {
+        if (_selectedSound.value == sound)
+            return
+
+        _selectedSound.value = sound
+    }
+
+    fun setVolume(value: Float) {
+        if (_volume.value.equals(value))
+            return
+
+        _volume.value = value
+    }
+
+    fun setShutdownTimer(hour: Int, minute: Int) {
+        if (_shutdownTimer.value == Pair(hour, minute))
+            return
+
+        _shutdownTimer.value = Pair(hour, minute)
+    }
+}
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -71,6 +123,9 @@ class MainActivity : ComponentActivity() {
             val navController = rememberNavController()
 
             SleepTrackerTheme {
+
+                val viewModel: SleepTrackingViewModel = viewModel()
+
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding: PaddingValues ->
                     Box(modifier = Modifier.padding(innerPadding)) {
                         NavHost(navController = navController, startDestination = "loginScreen") {
@@ -79,7 +134,7 @@ class MainActivity : ComponentActivity() {
                             composable("sleepAnalysis") { SleepAnalysisScreen(navController) }
                             composable("scheduleSettings") { ScheduleSettingsScreen(navController) }
                             composable("notificationSettings") { NotificationSettingsScreen(navController) }
-                            composable("soundSettings") { SoundSettingsScreen(navController) }
+                            composable("soundSettings") { SoundSettingsScreen(navController , viewModel) }
                         }
                     }
                 }
@@ -731,10 +786,19 @@ fun NotificationSettingsScreen(navController: NavHostController) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SoundSettingsScreen(navController: NavHostController) {
-    val timePickerState = rememberTimePickerState(initialHour = 1, initialMinute = 0, true)
-    var sliderPosition by remember { mutableFloatStateOf(0f) }
-    val sounds = listOf("Sound 1", "Sound 2", "Sound 3", "Sound 4", "Sound 5", "Sound 6")
+fun SoundSettingsScreen(
+    navController: NavHostController,
+    viewModel: SleepTrackingViewModel
+) {
+    val selectedSound by viewModel.selectedSound.collectAsState()
+    val volume by viewModel.volume.collectAsState()
+    val sounds = viewModel.sounds
+    val shutdownTimer by viewModel.shutdownTimer.collectAsState()
+    val timePickerState = rememberTimePickerState(
+        initialHour = shutdownTimer.first,
+        initialMinute = shutdownTimer.second,
+        is24Hour = true
+    )
 
     Column(
         modifier = Modifier.fillMaxSize().background(Color(0xFF907ACA)),
@@ -770,7 +834,9 @@ fun SoundSettingsScreen(navController: NavHostController) {
                     items(sounds) { sound ->
                         Card(
                             colors = CardDefaults.cardColors(
-                                containerColor = Color(0xFFEACBFF)
+                                containerColor =
+                                    if (sound == selectedSound) Color(0xFF65558F)
+                                    else Color(0xFFEACBFF)
                             ),
                             shape = RoundedCornerShape(0.dp),
                             modifier = Modifier.size(
@@ -781,18 +847,19 @@ fun SoundSettingsScreen(navController: NavHostController) {
                             Box(
                                 modifier = Modifier
                                     .fillMaxSize()
-                                    .clickable { println("Clicked on: $sound") },
+                                    .clickable { viewModel.selectSound(sound) },
                                 contentAlignment = Alignment.Center
                             ) {
                                 Text(
                                     text = sound,
                                     fontSize = 18.sp,
-                                    color = Color(0xFF65558F)
+                                    color =
+                                        if (sound == selectedSound) Color(0xFFEACBFF)
+                                        else Color(0xFF65558F)
                                 )
                             }
                         }
                     }
-
                 }
             }
             Text (
@@ -801,8 +868,8 @@ fun SoundSettingsScreen(navController: NavHostController) {
                 color = Color(0xFFEACBFF)
             )
             Slider (
-                value = sliderPosition,
-                onValueChange = { sliderPosition = it }
+                value = volume,
+                onValueChange = { viewModel.setVolume(it) }
             )
             Card(
                 shape = RoundedCornerShape(24.dp),
@@ -840,7 +907,9 @@ fun SoundSettingsScreen(navController: NavHostController) {
             Spacer(modifier = Modifier.weight(1f))
 
             Button(
-                onClick = {},
+                onClick = {
+                    viewModel.setShutdownTimer(timePickerState.hour, timePickerState.minute)
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(40.dp),
